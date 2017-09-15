@@ -1,5 +1,5 @@
 {
-    "name": "xxx",
+    "name": "JustDo8",
     "version": "1.0.0",
     "description": "a weex project",
     "main": "index.js",
@@ -15,6 +15,7 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+        "natjs": "0.0.9",
         "vue": "^2.1.8",
         "vue-router": "^2.1.1",
         "vuex": "^2.1.1",

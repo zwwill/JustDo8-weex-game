@@ -32,11 +32,7 @@
 
 <script>
 
-    //              Nat.audio.play('http://cdn.instapp.io/nat/samples/audio.mp3',() => {
-    //
-    //              });
     var modal = weex.requireModule('modal');
-    import Nat from 'natjs';
     import stoneMap from '../assets/components/stoneMap.vue';
     export default {
         components: {

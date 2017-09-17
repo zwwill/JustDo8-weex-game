@@ -16,6 +16,7 @@
 
     const modal = weex.requireModule('modal');
     import stone from './stone.vue';
+    import Nat from 'natjs';
     export default {
         components: {
             stone: stone
@@ -34,13 +35,14 @@
                     ['', '', '', '', '', '']
                 ],
                 sliderIndex: 1,
-                actionLock: false
+                actionLock: false,
+                sounds:{
+                    change:'http://doc.zwwill.com/justdo8/res/change.wav'
+                }
             }
         },
         mounted(){
             this.pushStones();
-            console.log('stones',this.stones);
-            console.log('map',this.map);
         },
         methods: {
             /**
@@ -98,7 +100,7 @@
                 this.map[0][this.sliderIndex] = _id2;
                 this.sChange(_id3, -1);
                 this.map[0][this.sliderIndex+1] = _id3;
-
+                this.music(this.sounds['change']);
             },
             /**
              * 滑块左右滚动
@@ -151,6 +153,9 @@
              * */
             sUp(_id,_score){
                 this.$refs[_id][0].scoreChange(_score);
+            },
+            music(_res){
+//                Nat.audio.play(_res);
             }
         }
     }

@@ -17,6 +17,16 @@
     const modal = weex.requireModule('modal');
     import stone from './stone.vue';
     import Nat from 'natjs';
+    const EmptyMap = [
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', ''],
+                ['', '', '', '', '', '']
+            ];
     export default {
         components: {
             stone: stone
@@ -53,7 +63,6 @@
                 switch (_action){
                     case 'click':
                     case 'up':
-                        modal.toast({message:'change',duration:0.1});
                         this.actionChange();
                         break;
                     case 'left':
@@ -64,10 +73,10 @@
                         this.actionDown();
                         break;
                     default:
-                        modal.toast({message:'unknown',duration:0.1});
+                        modal.toast({message:'unknown action',duration:0.1});
                 }
                 this.actionLock = true;
-                setTimeout(()=>{this.actionLock = false;},199);
+                setTimeout(()=>{this.actionLock = false;},200);
             },
             /**
              * 新增三个单元块
@@ -100,14 +109,12 @@
                 this.map[0][this.sliderIndex] = _id2;
                 this.sChange(_id3, -1);
                 this.map[0][this.sliderIndex+1] = _id3;
-                this.music(this.sounds['change']);
             },
             /**
              * 滑块左右滚动
              * */
             actionSliderMove(_d){
                 if(this.sliderIndex<=0 && _d=='left' || this.sliderIndex>=3 && _d=='right')return;
-                modal.toast({message:_d,duration:0.1});
                 let _id1 = this.map[0][this.sliderIndex],
                     _id2 = this.map[0][this.sliderIndex + 1],
                     _id3 = this.map[0][this.sliderIndex + 2],
@@ -125,9 +132,72 @@
             /**
              * 单元块位置移动+权重加码
              * */
+            actionDown(){
+                this.$emit('screenLock');
+                let _id,_x,_y,_res=[];
+                for(let i=0 ; i<3 ; i++){
+                    _y = "";
+                    _id = this.map[0][this.sliderIndex+i];
+                    _x = this.$refs[_id][0].p.split(',')[0];
+                    for(let j=7;j>0;j--){
+                        if(!this.map[j][_x]){
+                            _y = j;
+                            break;
+                        }
+                    }
+                    _y>0 && _res.push([_id,_x,_y]);
+                }
+                if(_res && _res.length == 3){
+                    for(let p=0 ; p<3 ; p++) {
+                        this.map[_res[p][2]][_res[p][1]] = _id;
+                        this.map[0][this.sliderIndex+p] = '';
+                        this.sChange(_res[p][0], _res[p][1]+','+_res[p][2]);
+                    }
+                    this.mapUpdate();
+                }else {
+                    this.$emit('over');
+                }
+            },
+            /**
+             * 重新计算map并更新
+             * */
+            mapUpdate(){
+                this.mapCalculator1(this.map);
+            },
+            /**
+             * 计算map
+             * */
+            mapCalculator1(_map){
+                // 新的空map 和 活动的stone
+                let res = JSON.parse(JSON.stringify(EmptyMap)),
+                    activeStones=[],
+                    hight = _map.length,
+                    width = _map[0].length,
+                    _tp_id,_p,_s;
+                for(let y = hight-1; y>0;y--){
+                    for(let x = 0; x<width; x++){
+                        _tp_id = "";
+                        if( (x==0 || x==width-1) && (y==1 || y==hight-1) ) continue;   //排除四角
+                        if(y==hight-1){
+                            _tp_id = _map[y][x];
+                            _p = this.$refs[_tp_id][0].p;
+                            _s = this.$refs[_tp_id][0].num;
+                        }
+                    }
+                }
+                if(activeStones.length==0){
+                    this.$emit('screenUnlock');
+                    setTimeout(()=>{this.pushStones();},100);
+                }
+
+
+            },
+            /**
+             * 单元块位置移动+权重加码
+             * */
             sChange(_id,_p,_score){
                 if(typeof _p == 'string' && _p.split(',')) {
-                    this.sMove(_id, _p.split(',')[0], _p.split(',')[1]);
+                    this.sMove(_id, _p.split(',')[0], 7-parseInt(_p.split(',')[1]));
                 }else if(typeof _p == 'number' && _p<=3 && _p>=-3){
                     var _tp = this.$refs[_id][0].p;
                     this.sMove(_id,  parseInt(_tp.split(',')[0])+_p , _tp.split(',')[1]);
@@ -135,17 +205,10 @@
                 _score && this.sUp(_id,_score);
             },
             /**
-             * 单元块位置移动+权重加码
-             * */
-            actionDown(){
-                var _id = this.stones[0].id;
-                this.sChange(_id, '0,0');
-            },
-
-            /**
              * 单元块位置移动
              * */
             sMove(_id,_x,_y){
+                // 7-y 是为了翻转坐标
                 this.$refs[_id][0].move(_x,_y);
             },
             /**

@@ -33,3 +33,4 @@ lauch.json
 /platforms/
 /dist/
 /temp/
+/package-lock.json

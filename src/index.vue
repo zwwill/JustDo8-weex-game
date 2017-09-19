@@ -3,7 +3,7 @@
       <image class="i-banner" resize="contain" src="http://doc.zwwill.com/justdo8/img/banner.png?t"></image>
       <text style="color:#fff;">{{actiontp}}</text>
       <text style="color:#fff;">{{sliderMove}},{{actionSize}}</text>
-      <stoneMap ref="stoneMap" class="stone-map" @actionLock="onActionLock" @actionUnlock="onActionUnlock"></stoneMap>
+      <stoneMap ref="stoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameoverk"></stoneMap>
   </div>
 </template>
 <style>
@@ -78,13 +78,13 @@
                 this.actiontp = "horizontalpan";
                 this.actionTo = e.changedTouches[0].screenX
                 this.actionSize = this.actionTo - this.actionStart;
-                if(this.actionSize >= 100){
+                if(this.actionSize >= 40){
                     this.sliderMove = 'right';
                     this.actionStart = this.actionTo;
 //                    modal.toast({message:"Slider Right",duration:0.1});
                     this.actionLaunch("right");
 
-                }else if(this.actionSize <= -100){
+                }else if(this.actionSize <= -40){
                     this.sliderMove = 'left';
                     this.actionStart = this.actionTo;
 //                    modal.toast({message:"Slider Left",duration:0.1});
@@ -93,14 +93,19 @@
                 }
             },
 
-            onActionLock(e) {
+            onScreenLock(e) {
+                this.ScreenLock = true;
                 modal.toast({message:"ActionLock",duration:0.1});
             },
-            onActionUnlock(e) {
+            onScreenUnlock(e) {
+                this.ScreenLock = false;
                 modal.toast({message:"ActionUnlock",duration:0.1});
             },
+            onGameoverk(e) {
+                modal.toast({message:"Game Over",duration:1});
+            },
             actionLaunch(_action){
-                this.allAction.indexOf(_action)!=-1 && this.$refs.stoneMap.action(_action)
+                !this.ScreenLock && this.allAction.indexOf(_action)!=-1 && this.$refs.stoneMap.action(_action)
             }
         }
     }

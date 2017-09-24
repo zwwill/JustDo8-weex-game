@@ -64,15 +64,27 @@
                 });
             },
             num: function (val) {
-                animation.transition(this.$refs['stone'],{
-                    styles: {
-                        color: this.colors[this.score],
-                        backgroundColor: this.backgroundColor[this.score]
-                    },
-                    duration: 200,
-                    timingFunction: 'ease',
-                    delay: 0
-                });
+                if(val != 0) {
+                    animation.transition(this.$refs['stone'], {
+                        styles: {
+                            color: this.colors[this.score],
+                            backgroundColor: this.backgroundColor[this.score]
+                        },
+                        duration: 200,
+                        timingFunction: 'ease',
+                        delay: 0
+                    });
+                }else{
+                    animation.transition(this.$refs['stone'], {
+                        styles: {
+                            color: '#fff',
+                            backgroundColor: '#fff'
+                        },
+                        duration: 200,
+                        timingFunction: 'ease',
+                        delay: 0
+                    });
+                }
             }
         },
         mounted(){

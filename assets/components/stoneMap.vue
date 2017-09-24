@@ -126,6 +126,8 @@
                 this.map[0][this.sliderIndex+_addend+1] = _id2;
                 this.sChange(_id3, _addend);
                 this.map[0][this.sliderIndex+_addend+2] = _id3;
+
+                this.map[0][this.sliderIndex+1+_addend*-1] = "";
                 this.sliderIndex += _addend;
 
             },
@@ -149,7 +151,7 @@
                 }
                 if(_res && _res.length == 3){
                     for(let p=0 ; p<3 ; p++) {
-                        this.map[_res[p][2]][_res[p][1]] = _id;
+                        this.map[_res[p][2]][_res[p][1]] = _res[p][0];
                         this.map[0][this.sliderIndex+p] = '';
                         this.sChange(_res[p][0], _res[p][1]+','+_res[p][2]);
                     }
@@ -170,24 +172,67 @@
             mapCalculator1(_map){
                 // 新的空map 和 活动的stone
                 let res = JSON.parse(JSON.stringify(EmptyMap)),
-                    activeStones=[],
+                    activeStones={
+                        lock:false
+                    },
                     hight = _map.length,
                     width = _map[0].length,
                     _tp_id,_p,_s;
                 for(let y = hight-1; y>0;y--){
                     for(let x = 0; x<width; x++){
-                        _tp_id = "";
-                        if( (x==0 || x==width-1) && (y==1 || y==hight-1) ) continue;   //排除四角
-                        if(y==hight-1){
-                            _tp_id = _map[y][x];
-                            _p = this.$refs[_tp_id][0].p;
-                            _s = this.$refs[_tp_id][0].num;
+                        _tp_id = _map[y][x] || "";
+                        if(!_tp_id || (x==0 || x==width-1) && (y==1 || y==hight-1) ) continue;   //排除四角
+                        // 循环遍历整个map
+                        _p = this.$refs[_tp_id][0].p.split(',');
+                        _s = parseInt(this.$refs[_tp_id][0].num);
+                        if(x==0 || x==width-1 || y == 1 || y==hight-1) {
+                            //侧边
+                            let _p1,_p2;
+                            if (x == 0 || x == width - 1) {
+                                // 竖排
+                                let _py = parseInt(_p[1]);
+                                if(!_map[_py - 1][x] || !_map[_py + 1][x]) continue;
+                                _p1 = this.$refs[_map[_py - 1][x]][0];
+                                _p2 = this.$refs[_map[_py + 1][x]][0];
+                            } else if (y == 1 || y == hight - 1) {
+                                // 横排
+                                let _px = parseInt(_p[0]);
+                                if(!_map[y][_px - 1] || !_map[y][_px + 1]) continue;
+                                _p1 = this.$refs[_map[y][_px - 1]][0];
+                                _p2 = this.$refs[_map[y][_px + 1]][0];
+                            }
+                            if (_p1&&_p2&&_p1.num == _s && _p2.num == _s) {
+
+
+                                activeStones['lock'] = true;
+                                activeStones[_tp_id] = {
+                                    id: _tp_id,
+                                    score: ++_s
+                                };
+                                activeStones[_p1.id] = {
+                                    id: _p1.id,
+                                    score: 0
+                                };
+                                activeStones[_p2.id] = {
+                                    id: _p2.id,
+                                    score: 0
+                                };
+                            }
                         }
+
                     }
                 }
-                if(activeStones.length==0){
+                if(!activeStones['lock']){
                     this.$emit('screenUnlock');
                     setTimeout(()=>{this.pushStones();},100);
+                }else{
+                    setTimeout(()=>{
+                        for(let s in activeStones){
+                            if(s == 'lock') continue;
+                            modal.toast({message:activeStones[s].score,duration:0.1});
+                            this.sChange(s,undefined,activeStones[s].score);
+                        }
+                    },300)
                 }
 
 
@@ -202,7 +247,7 @@
                     var _tp = this.$refs[_id][0].p;
                     this.sMove(_id,  parseInt(_tp.split(',')[0])+_p , _tp.split(',')[1]);
                 }
-                _score && this.sUp(_id,_score);
+                _score>=0 && this.sUp(_id,_score);
             },
             /**
              * 单元块位置移动

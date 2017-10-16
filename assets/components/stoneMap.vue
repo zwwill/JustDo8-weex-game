@@ -16,7 +16,7 @@
 
     const modal = weex.requireModule('modal');
     import stone from './stone.vue';
-    import Nat from 'natjs';
+    //import Nat from 'natjs';
     const EmptyMap = [
                 ['', '', '', '', '', ''],
                 ['', '', '', '', '', ''],
@@ -74,6 +74,7 @@
                         break;
                     default:
                         modal.toast({message:'unknown action',duration:0.1});
+
                 }
                 this.actionLock = true;
                 setTimeout(()=>{this.actionLock = false;},200);
@@ -103,11 +104,11 @@
                     _id2 = this.map[0][this.sliderIndex + 1],
                     _id3 = this.map[0][this.sliderIndex + 2];
 
-                this.sChange(_id1, 2);
+                this.sChange(_id1, {x:2});
                 this.map[0][this.sliderIndex+2] = _id1;
-                this.sChange(_id2, -1);
+                this.sChange(_id2, {x:-1});
                 this.map[0][this.sliderIndex] = _id2;
-                this.sChange(_id3, -1);
+                this.sChange(_id3, {x:-1});
                 this.map[0][this.sliderIndex+1] = _id3;
             },
             /**
@@ -120,11 +121,11 @@
                     _id3 = this.map[0][this.sliderIndex + 2],
                     _addend = _d=='left'? -1 : 1;
 
-                this.sChange(_id1, _addend);
+                this.sChange(_id1, {x:_addend});
                 this.map[0][this.sliderIndex+_addend] = _id1;
-                this.sChange(_id2, _addend);
+                this.sChange(_id2, {x:_addend});
                 this.map[0][this.sliderIndex+_addend+1] = _id2;
-                this.sChange(_id3, _addend);
+                this.sChange(_id3, {x:_addend});
                 this.map[0][this.sliderIndex+_addend+2] = _id3;
 
                 this.map[0][this.sliderIndex+1+_addend*-1] = "";
@@ -169,91 +170,144 @@
             /**
              * 计算map
              * */
-            mapCalculator1(_map){
-                // 新的空map 和 活动的stone
-                let res = JSON.parse(JSON.stringify(EmptyMap)),
-                    activeStones={
-                        lock:false
-                    },
-                    hight = _map.length,
-                    width = _map[0].length,
-                    _tp_id,_p,_s;
-                for(let y = hight-1; y>0;y--){
-                    for(let x = 0; x<width; x++){
-                        _tp_id = _map[y][x] || "";
-                        if(!_tp_id || (x==0 || x==width-1) && (y==1 || y==hight-1) ) continue;   //排除四角
-                        // 循环遍历整个map
-                        _p = this.$refs[_tp_id][0].p.split(',');
-                        _s = parseInt(this.$refs[_tp_id][0].num);
-                        if(x==0 || x==width-1 || y == 1 || y==hight-1) {
-                            //侧边
-                            let _p1,_p2;
-                            if (x == 0 || x == width - 1) {
-                                // 竖排
-                                let _py = parseInt(_p[1]);
-                                if(!_map[_py - 1][x] || !_map[_py + 1][x]) continue;
-                                _p1 = this.$refs[_map[_py - 1][x]][0];
-                                _p2 = this.$refs[_map[_py + 1][x]][0];
-                            } else if (y == 1 || y == hight - 1) {
-                                // 横排
-                                let _px = parseInt(_p[0]);
-                                if(!_map[y][_px - 1] || !_map[y][_px + 1]) continue;
-                                _p1 = this.$refs[_map[y][_px - 1]][0];
-                                _p2 = this.$refs[_map[y][_px + 1]][0];
-                            }
-                            if (_p1&&_p2&&_p1.num == _s && _p2.num == _s) {
+            mapCalculator1:(function () {
+                var updateStone = function(_stones,_id,_s) {
+                    if(_stones[_id]){
+                        _s != 0 && (_stones[_id]['score'] == 0 ? _stones[_id]['score'] = _s : _stones[_id]['score']++);
+                    }else{
+                        _stones[_id] = {
+                            id: _id,
+                            score: _s
+                        }
+                    }
+                };
+                return function (_map) {
+                    // 新的空map 和 活动的stone
+                    let hasChange=false,
+                        activeStones={},
+                        height = _map.length,
+                        width = _map[0].length,
+                        _tp_id,_p,_s;
+                    for(let y = height-1; y>0;y--){
+                        for(let x = 0; x<width; x++){
+                            _tp_id = _map[y][x] || "";
+                            if(!_tp_id || (x==0 || x==width-1) && (y==1 || y==height-1) ) continue;   //排除四角
+                            // 循环遍历整个map
+                            _p = this.$refs[_tp_id][0].p.split(',');
+                            _s = parseInt(this.$refs[_tp_id][0].num);
+                            let _p1,_p2,_px,_py;
+                            if(x==0 || x==width-1 || y == 1 || y==height-1) {
+                                //侧边
+                                if (x == 0 || x == width - 1) {
+                                    // 竖排
+                                    _py = height - 1 - parseInt(_p[1]);
+                                    if(!_map[_py - 1][x] || !_map[_py + 1][x]) continue;
+                                    _p1 = this.$refs[_map[_py - 1][x]][0];
+                                    _p2 = this.$refs[_map[_py + 1][x]][0];
 
-
-                                activeStones['lock'] = true;
-                                activeStones[_tp_id] = {
-                                    id: _tp_id,
-                                    score: ++_s
-                                };
-                                activeStones[_p1.id] = {
-                                    id: _p1.id,
-                                    score: 0
-                                };
-                                activeStones[_p2.id] = {
-                                    id: _p2.id,
-                                    score: 0
-                                };
+                                } else if (y == 1 || y == height - 1) {
+                                    // 横排
+                                    _px = parseInt(_p[0]);
+                                    if(!_map[y][_px - 1] || !_map[y][_px + 1]) continue;
+                                    _p1 = this.$refs[_map[y][_px - 1]][0];
+                                    _p2 = this.$refs[_map[y][_px + 1]][0];
+                                }
+                                if (_p1&&_p2&&_p1.num == _s && _p2.num == _s) {
+                                    hasChange = true;
+                                    updateStone(activeStones,_tp_id,++_s);
+                                    updateStone(activeStones,_p1.id,0);
+                                    updateStone(activeStones,_p2.id,0);
+                                }
+                            }else {
+                                //中间九宫格区域
+                                const _map_matrix = [
+                                    [[0,1],[0,-1]],
+                                    [[-1,1],[1,-1]],
+                                    [[-1,0],[1,0]],
+                                    [[-1,-1],[1,1]]
+                                ];
+                                _py = height - 1 - parseInt(_p[1]);
+                                _px = parseInt(_p[0]);
+                                for(let _i=0, _mm = _map_matrix[0] ; _i<_map_matrix.length ; _mm = _map_matrix[++_i]){
+                                    if(!_map[_py + _mm[0][0]][_px + _mm[0][1]] || !_map[_py + _mm[1][0]][_px + _mm[1][1]]) continue;
+                                    _p1 = this.$refs[_map[_py + _mm[0][0]][_px + _mm[0][1]]][0];
+                                    _p2 = this.$refs[_map[_py + _mm[1][0]][_px + _mm[1][1]]][0];
+                                    if (_p1&&_p2&&_p1.num == _s && _p2.num == _s) {
+                                        hasChange = true;
+                                        updateStone(activeStones,_tp_id,++_s);
+                                        updateStone(activeStones,_p1.id,0);
+                                        updateStone(activeStones,_p2.id,0);
+                                    }
+                                }
                             }
                         }
+                    }
 
+                    // 存在更新块
+                    if(hasChange){
+                        setTimeout(()=>{
+                            for(let s in activeStones){
+                                this.sChange(s,undefined,activeStones[s].score);
+                            }
+                            // 数字块整理
+                            setTimeout(()=>{
+                                this.stonesTrim();
+                            },100)
+                        },300)
+                    }else{
+                        this.$emit('screenUnlock');
+                        setTimeout(()=>{this.pushStones();},100);
                     }
                 }
-                if(!activeStones['lock']){
-                    this.$emit('screenUnlock');
-                    setTimeout(()=>{this.pushStones();},100);
-                }else{
-                    setTimeout(()=>{
-                        for(let s in activeStones){
-                            if(s == 'lock') continue;
-                            modal.toast({message:activeStones[s].score,duration:0.1});
-                            this.sChange(s,undefined,activeStones[s].score);
+            })(),
+            /**
+             * 整理数字块，堆积下降
+             * */
+            stonesTrim(){
+                let hasChange = false,
+                    height = this.map.length,
+                    width = this.map[0].length,
+                    _tp_id,_p_y,_step=0;
+                for(let x = 0; x<width; x++){
+                    _step = 0;
+                    for(let y = height-1; y>0;y--){
+                        _tp_id = this.map[y][x] || "";
+                        if(!_tp_id){
+                            _step ++;
+                            continue;
+                        }else if(_step>0){
+                            hasChange = true;
+                            _p_y = parseInt(this.$refs[_tp_id][0].p.split(',')[1]);
+                            this.sChange(_tp_id, {y:_step});
+                            this.map[height-1-_p_y+_step][x] = _tp_id;
+                            this.map[y][x] = "";
                         }
-                    },300)
+                    }
                 }
-
-
+                setTimeout(()=>{
+                    this.mapUpdate();
+                },hasChange?300:0);
             },
             /**
              * 单元块位置移动+权重加码
              * */
             sChange(_id,_p,_score){
+                let _tp = this.$refs[_id][0].p.split(',');
                 if(typeof _p == 'string' && _p.split(',')) {
+                    // 7-y 是为了翻转坐标
                     this.sMove(_id, _p.split(',')[0], 7-parseInt(_p.split(',')[1]));
-                }else if(typeof _p == 'number' && _p<=3 && _p>=-3){
-                    var _tp = this.$refs[_id][0].p;
-                    this.sMove(_id,  parseInt(_tp.split(',')[0])+_p , _tp.split(',')[1]);
+                }else if(typeof _p == 'object'){
+                    !_p.x && (_p.x=0);
+                    !_p.y && (_p.y=0);
+                    this.sMove(_id, parseInt(_tp[0])+_p.x , parseInt(_tp[1])-_p.y);
                 }
                 _score>=0 && this.sUp(_id,_score);
+                _score == 0 && (this.map[7-parseInt(_tp[1])][parseInt(_tp[0])] = "");
             },
             /**
              * 单元块位置移动
              * */
             sMove(_id,_x,_y){
-                // 7-y 是为了翻转坐标
                 this.$refs[_id][0].move(_x,_y);
             },
             /**

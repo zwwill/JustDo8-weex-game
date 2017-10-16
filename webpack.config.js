@@ -80,10 +80,7 @@ const webConfig = {
       {
         test: /\.js$/,
         use: [{
-          loader: 'babel-loader',
-            options: {
-                presets: ['es2015']
-            }
+          loader: 'babel-loader'
         }],
         exclude: /node_modules/
       },
@@ -109,11 +106,8 @@ const weexConfig = {
         test: /\.js$/,
         use: [{
           loader: 'babel-loader',
-            options: {
-                presets: ['es2015']
-            }
         }],
-        exclude: /node_modules/
+        exclude: /node_modules(?!\/.*(weex).*)/
       },
       {
         test: /\.vue(\?[^?]+)?$/,

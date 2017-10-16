@@ -92,14 +92,13 @@
 
                 }
             },
-
             onScreenLock(e) {
                 this.ScreenLock = true;
-                modal.toast({message:"ActionLock",duration:0.1});
+//                modal.toast({message:"ActionLock",duration:0.1});
             },
             onScreenUnlock(e) {
                 this.ScreenLock = false;
-                modal.toast({message:"ActionUnlock",duration:0.1});
+//                modal.toast({message:"ActionUnlock",duration:0.1});
             },
             onGameoverk(e) {
                 modal.toast({message:"Game Over",duration:1});

@@ -1,9 +1,16 @@
 <template>
   <div class="wrapper" @swipe="onSwipe" @click="onClick" @panstart="onPanstart" @panend="onPanend" @horizontalpan="onHorizontalpan">
-      <image class="i-banner" resize="contain" src="http://doc.zwwill.com/justdo8/img/banner.png?t"></image>
-      <text style="color:#fff;">{{actiontp}}</text>
-      <text style="color:#fff;">{{sliderMove}},{{actionSize}}</text>
-      <stoneMap ref="stoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameoverk"></stoneMap>
+      <image class="i-banner" ref="rLogo" resize="contain" src="http://doc.zwwill.com/justdo8/img/banner.png"></image>
+      <text class="btn-start" ref="rBtnStart" @click="gameStart">START</text>
+      <!--<text style="color:#fff;">{{actiontp}}</text>-->
+      <!--<text style="color:#fff;">{{sliderMove}},{{actionSize}}</text>-->
+      <stoneMap v-if="stoneMapShow" ref="rStoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameover"></stoneMap>
+      <div class="u-info" v-if="infoShow">
+          <text class="info-tlt">{{highScore?'FINAL SCORE':'RECORD BREAKING'}}</text>
+          <text class="info-score">{{finalScore}}</text>
+          <text class="info-high-s" v-if="highScore">HIGH SCORE: {{highScore}}</text>
+          <text class="btn-restart" @click="gameRestart">RESTART</text>
+      </div>
   </div>
 </template>
 <style>
@@ -21,35 +28,157 @@
         flex-direction: column;
     }
     .i-banner{
+        position: absolute;
+        top: 200px;
+        left: 175px;
         width: 400px;
         height: 100px;
+        opacity: 0;
+    }
+    .btn-start{
+        position: absolute;
+        color: #3cd917;
+        font-size: 50px;
+        width: 300px;
+        height: 80px;
+        left: 225px;
+        bottom: 300px;
+        text-align: center;
+        line-height: 80px;
+        border-width: 1px;
+        border-color: #3cd917;
+        border-radius: 8px;
+        background-color: rgba(0,0,0,0.8);
+        box-shadow: 0 0 10px #fff;
+        opacity: 0;
     }
     .stone-map{
         position: relative;
         flex: 1;
+    }
+    .u-info{
+        position: absolute;
+        top: 200px;
+        height: 800px;
+        width: 750px;
+    }
+    .info-tlt{
+        font-size: 70px;
+        color:#fff;
+        text-align: center;
+    }
+    .info-score{
+        font-size: 100px;
+        margin-top: 130px;
+        margin-bottom: 130px;
+        color:#3cd917;
+        text-align: center;
+    }
+    .info-high-s{
+        font-size: 40px;
+        margin-bottom: 30px;
+        color: #fbf00c;
+        text-align: center;
+    }
+    .btn-restart{
+        position: relative;
+        color: #3cd917;
+        font-size: 50px;
+        width: 300px;
+        height: 80px;
+        top:100px;
+        left: 400px;
+        text-align: center;
+        line-height: 80px;
+        border-width: 1px;
+        border-color: #3cd917;
+        border-radius: 8px;
     }
 </style>
 
 <script>
 
     var modal = weex.requireModule('modal');
+    const animation = weex.requireModule('animation');
     import stoneMap from '../assets/components/stoneMap.vue';
     export default {
         components: {
             stoneMap: stoneMap
         },
         data: {
-            actiontp: 'action',
-            actionStart:"*",
-            actionTo:"*",
-            actionSize:0,
-            sliderMove:"",
+//            actiontp: 'action',
+            stoneMapShow: false,
+            infoShow: false,
+            actionStart: 0,
+            actionTo: 0,
+            actionSize: 0,
+            finalScore:0,
+            highScore:0,
+//            sliderMove:"",
             allAction:["click", "up", "down", "left", "right"]                              //指令白名单
         },
+
+        mounted(){
+            setTimeout(()=>{
+                animation.transition(this.$refs['rLogo'],{
+                    styles: {
+                        transform: 'translateY(200px) scale(1.4)',
+                        opacity:1
+                    },
+                    duration: 800,
+                    timingFunction: 'ease-out',
+                    delay: 0
+                },()=>{
+                    animation.transition(this.$refs['rBtnStart'],{
+                        styles: {
+                            opacity:1
+                        },
+                        duration: 2000,
+                        timingFunction: 'ease',
+                        delay: 0
+                    });
+                });
+            },100);
+        },
         methods: {
+            gameStart(){
+                animation.transition(this.$refs['rBtnStart'],{
+                    styles: {
+                        opacity:0
+                    },
+                    duration: 1000,
+                    timingFunction: 'linear',
+                    delay: 0
+                });
+
+                animation.transition(this.$refs['rLogo'],{
+                    styles: {
+                        transform: 'translate(-190px,-170px)',
+                        opacity:1
+                    },
+                    duration: 1000,
+                    timingFunction: 'ease-out',
+                    delay: 0
+                },()=>{
+                    this.stoneMapShow = true;
+                });
+            },
+            gameRestart() {
+                this.finalScore = this.highScore = 0;
+                this.stoneMapShow = true;
+                this.infoShow = false;
+                this.ScreenLock = false;
+            },
+            onGameover(s1,s2) {
+                this.finalScore = s1;
+                this.highScore = s1>s2?0:s2;
+                this.stoneMapShow = false;
+                this.infoShow = true;
+                this.ScreenLock = true;
+            },
             onClick(e) {
                 this.actiontp = "click";
-                this.actionLaunch("click")
+                this.actionLaunch("click");
             },
             /**
              * 手势：上下滑动
@@ -75,36 +204,29 @@
              * */
             onHorizontalpan(e) {
                 if(this.actionStart==0) return;
-                this.actiontp = "horizontalpan";
+//                this.actiontp = "horizontalpan";
                 this.actionTo = e.changedTouches[0].screenX
                 this.actionSize = this.actionTo - this.actionStart;
                 if(this.actionSize >= 40){
-                    this.sliderMove = 'right';
+//                    this.sliderMove = 'right';
                     this.actionStart = this.actionTo;
-//                    modal.toast({message:"Slider Right",duration:0.1});
                     this.actionLaunch("right");
 
                 }else if(this.actionSize <= -40){
-                    this.sliderMove = 'left';
+//                    this.sliderMove = 'left';
                     this.actionStart = this.actionTo;
-//                    modal.toast({message:"Slider Left",duration:0.1});
                     this.actionLaunch("left");
 
                 }
             },
             onScreenLock(e) {
                 this.ScreenLock = true;
-//                modal.toast({message:"ActionLock",duration:0.1});
             },
             onScreenUnlock(e) {
                 this.ScreenLock = false;
-//                modal.toast({message:"ActionUnlock",duration:0.1});
-            },
-            onGameoverk(e) {
-                modal.toast({message:"Game Over",duration:1});
             },
             actionLaunch(_action){
-                !this.ScreenLock && this.allAction.indexOf(_action)!=-1 && this.$refs.stoneMap.action(_action)
+                !this.ScreenLock && this.allAction.indexOf(_action)!=-1 && this.$refs.rStoneMap && this.$refs.rStoneMap.action(_action)
             }
         }
     }

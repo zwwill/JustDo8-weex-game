@@ -1,5 +1,5 @@
 <template>
-    <text ref="stone" class="u-stone" :style="{color:color,visibility:visibility,backgroundColor:backgroundColor0}" v-if="score!=0">{{score}}</text>
+    <text ref="stone" class="u-stone" :style="{color:color,visibility:visibility,backgroundColor:backgroundColor0}" v-if="show" >{{score}}</text>
 </template>
 
 <style scoped>
@@ -8,6 +8,8 @@
         height: 125px;
         border-bottom-width: 10px;
         border-bottom-color: rgba(0,0,0,0.2);
+        /*border-width: 4px;*/
+        /*border-color: rgba(0,0,0,0.2);*/
         line-height: 125px;
         text-align: center;
         font-size: 80px;
@@ -17,7 +19,7 @@
         left: 0;
         bottom: 0;
         transform: translate(0px,-875px);
-        opacity: 0.8;
+        /*opacity: 0.8;*/
         /*visibility: hidden;*/
     }
 </style>
@@ -29,7 +31,8 @@
         props: ['id', 'p0', 'num0'],
         data(){
             return {
-                p: '0,7',
+                show:true,
+                p: '0,8',
                 visibility: '',
                 num: -1,
                 colors:             ["#333","#666","#eee","#b9e3ee","#ebe94b","#46cafb","#eca48f","#decb3d","#8d1894"],
@@ -50,9 +53,8 @@
         },
         watch: {
             p: function (val) {
-                var _x = 125*this.p.charAt(0)+"px",
-                    _y = 125*this.p.charAt(2)+"px";
-
+                var _x = 125*val.charAt(0)+"px",
+                    _y = 125*val.charAt(2)+"px";
                 animation.transition(this.$refs['stone'],{
                     styles: {
                         transform: 'translate('+_x +',-'+_y+')'
@@ -61,29 +63,6 @@
                     timingFunction: 'ease-in',
                     delay: 0
                 });
-            },
-            num: function (val) {
-                if(val>0 && val<9) {
-//                    animation.transition(this.$refs['stone'], {
-//                        styles: {
-//                            color: this.colors[this.score]
-//                        },
-//                        duration: 200,
-//                        timingFunction: 'ease',
-//                        delay: 0
-//                    });
-                }else{
-//                    animation.transition(this.$refs['stone'], {
-//                        styles: {
-//                            color: '#fff'
-//                        },
-//                        duration: 200,
-//                        timingFunction: 'ease',
-//                        delay: 0
-//                    },()=>{{this.$emit('stonePop',this.data.id)}});
-//                    modal.toast({message:"dsf",duration:0.1})
-//                    this.$parent.$emit('stonePop',123);
-                }
             }
         },
         mounted(){
@@ -94,7 +73,23 @@
                 this.p = _x + ',' + _y;
             },
             scoreChange(_num){
-                this.num = _num;
+                if(_num>0) {
+                    this.num = _num;
+                }else{
+
+                    animation.transition(this.$refs['stone'], {
+                        styles: {
+                            transform: 'translate('+125*5 +',-'+125*8+') scale(0)'
+                        },
+                        duration: 700,
+                        timingFunction: 'ease-in',
+                        delay: 0
+                    },()=>{
+                        this.show = false;
+                        this.$parent.scorePlus(Math.pow(4,parseInt(this.num)));
+                        this.num = 0;
+                    });
+                }
             },
             initState(_p){
                 _p = _p.split(',');

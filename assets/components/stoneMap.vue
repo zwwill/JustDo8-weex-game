@@ -1,19 +1,23 @@
 <template>
     <div class="u-slider">
+        <div class="u-score-b b2">
+            <text class="u-score-tlt">HIGH</text>
+            <text class="u-score">{{highScore>totalScore?highScore:totalScore}}</text>
+        </div>
+        <div class="u-score-b">
+            <text class="u-score-tlt">SCORE</text>
+            <text :class="['u-score',totalScore>highScore?'clr-green':'']" ref="rScore">{{totalScore}}</text>
+        </div>
         <template v-for="i in stones">
             <stone :ref="i.id" :id="i.id" :p0="i.p0" :num0="i.s"></stone>
         </template>
     </div>
 </template>
 
-<style scoped>
-    .u-slider{
-
-    }
-</style>
-
 <script>
 
+    const storage = weex.requireModule('storage');
+    const animation = weex.requireModule('animation');
     const modal = weex.requireModule('modal');
     import stone from './stone.vue';
     //import Nat from 'natjs';
@@ -33,6 +37,8 @@
         },
         data(){
             return {
+                totalScore:0,
+                highScore:0,
                 stones:[],
                 map: [
                     ['', '', '', '', '', ''],
@@ -45,7 +51,7 @@
                     ['', '', '', '', '', '']
                 ],
                 sliderIndex: 1,
-                actionLock: false,
+                actionLock: true,
                 sounds:{
                     change:'http://doc.zwwill.com/justdo8/res/change.wav'
                 }
@@ -53,6 +59,13 @@
         },
         mounted(){
             this.pushStones();
+            storage.getItem('H-SCORE', event => {
+                if(event && event.data && event.data!="undefined"){
+                    this.highScore = parseInt(event.data);
+                }else {
+                    this.highScore = 0;
+                }
+            })
         },
         methods: {
             /**
@@ -64,20 +77,23 @@
                     case 'click':
                     case 'up':
                         this.actionChange();
+                        this.actionLock = true;
+                        setTimeout(()=>{this.actionLock = false;},200);
                         break;
                     case 'left':
                     case 'right':
                         this.actionSliderMove(_action);
+                        this.actionLock = true;
+                        setTimeout(()=>{this.actionLock = false;},200);
                         break;
                     case 'down':
                         this.actionDown();
+                        this.actionLock = true;
                         break;
                     default:
                         modal.toast({message:'unknown action',duration:0.1});
 
                 }
-                this.actionLock = true;
-                setTimeout(()=>{this.actionLock = false;},200);
             },
             /**
              * 新增三个单元块
@@ -95,6 +111,7 @@
                     this.map[0][this.sliderIndex + i] = _id;
                 }
                 this.stones.push(..._ps);
+                this.actionLock = false;
             },
             /**
              * 滑块切换
@@ -158,8 +175,37 @@
                     }
                     this.mapUpdate();
                 }else {
-                    this.$emit('over');
+                    this.$emit('over',this.totalScore,this.highScore);
+                    if(this.totalScore>this.highScore) {
+                        storage.setItem('H-SCORE', this.totalScore)
+                    }
                 }
+            },
+            scorePlus:function (_s) {
+                if(this.totalScore + parseInt(_s) > this.highScore) {
+                    animation.transition(this.$refs['rScore'], {
+                        styles: {
+                            transform: 'scale(1.2)',
+                            transformOrigin: '100%'
+                        },
+                        duration: 100,
+                        timingFunction: 'ease-out',
+                        delay: 0
+                    }, () => {
+                        setTimeout(() => {
+                            animation.transition(this.$refs['rScore'], {
+                                styles: {
+                                    transform: ''
+                                },
+                                duration: 100,
+                                timingFunction: 'ease-in',
+                                delay: 0
+                            }, () => {
+                            });
+                        }, 100)
+                    });
+                }
+                this.totalScore += parseInt(_s) || 0;
             },
             /**
              * 重新计算map并更新
@@ -221,10 +267,10 @@
                             }else {
                                 //中间九宫格区域
                                 const _map_matrix = [
-                                    [[0,1],[0,-1]],
-                                    [[-1,1],[1,-1]],
-                                    [[-1,0],[1,0]],
-                                    [[-1,-1],[1,1]]
+                                    [[ 0, 1],[ 0,-1]],
+                                    [[-1, 1],[ 1,-1]],
+                                    [[-1, 0],[ 1, 0]],
+                                    [[-1,-1],[ 1, 1]]
                                 ];
                                 _py = height - 1 - parseInt(_p[1]);
                                 _px = parseInt(_p[0]);
@@ -232,9 +278,9 @@
                                     if(!_map[_py + _mm[0][0]][_px + _mm[0][1]] || !_map[_py + _mm[1][0]][_px + _mm[1][1]]) continue;
                                     _p1 = this.$refs[_map[_py + _mm[0][0]][_px + _mm[0][1]]][0];
                                     _p2 = this.$refs[_map[_py + _mm[1][0]][_px + _mm[1][1]]][0];
-                                    if (_p1&&_p2&&_p1.num == _s && _p2.num == _s) {
+                                    if (_p1 && _p2 && _p1.num==_s && _p2.num==_s) {
                                         hasChange = true;
-                                        updateStone(activeStones,_tp_id,++_s);
+                                        updateStone(activeStones,_tp_id,_s+1);
                                         updateStone(activeStones,_p1.id,0);
                                         updateStone(activeStones,_p2.id,0);
                                     }
@@ -253,7 +299,7 @@
                             setTimeout(()=>{
                                 this.stonesTrim();
                             },100)
-                        },300)
+                        },400)
                     }else{
                         this.$emit('screenUnlock');
                         setTimeout(()=>{this.pushStones();},100);
@@ -286,7 +332,7 @@
                 }
                 setTimeout(()=>{
                     this.mapUpdate();
-                },hasChange?300:0);
+                },hasChange?200:0);
             },
             /**
              * 单元块位置移动+权重加码
@@ -322,3 +368,33 @@
         }
     }
 </script>
+
+<style scoped>
+    .u-score-b{
+        position: fixed;
+        width: 230px;
+        top: 90px;
+        right: 20px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+    }
+    .b2{
+        top: 40px;
+    }
+    .u-score-tlt{
+        height: 40px;
+        color:#fff;
+        font-size: 30px;
+    }
+    .u-score{
+        height: 40px;
+        flex: 1;
+        font-size: 30px;
+        text-align: right;
+        color: #fff;
+    }
+    .clr-green{
+        color: #3cd917;
+    }
+</style>

@@ -1,5 +1,5 @@
 {
-    "name": "just do 8",
+    "name": "JustDo8",
     "version": "1.0.0",
     "description": "A weex game",
     "main": "",
@@ -13,7 +13,7 @@
     "keywords": [
         "weex"
     ],
-    "author": "",
+    "author": "zw.will<zwwill7@163.com>",
     "license": "MIT",
     "dependencies": {
         "fs-extra": "^4.0.1",

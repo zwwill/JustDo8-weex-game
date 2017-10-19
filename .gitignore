@@ -30,7 +30,6 @@ lauch.json
 #nei
 /mock/
 /plugins/
-/platforms/
 /dist/
 /temp/
 /package-lock.json

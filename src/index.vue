@@ -2,99 +2,16 @@
   <div class="wrapper" @swipe="onSwipe" @click="onClick" @panstart="onPanstart" @panend="onPanend" @horizontalpan="onHorizontalpan">
       <image class="i-banner" ref="rLogo" resize="contain" src="http://doc.zwwill.com/justdo8/img/banner.png"></image>
       <text class="btn-start" ref="rBtnStart" @click="gameStart">START</text>
-      <!--<text style="color:#fff;">{{actiontp}}</text>-->
-      <!--<text style="color:#fff;">{{sliderMove}},{{actionSize}}</text>-->
-      <stoneMap v-if="stoneMapShow" ref="rStoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameover"></stoneMap>
+      <stoneMap v-if="stoneMapShow" ref="rStoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameover" @win="onGameWin"></stoneMap>
       <div class="u-info" v-if="infoShow">
           <text class="info-tlt">{{highScore?'FINAL SCORE':'RECORD BREAKING'}}</text>
           <text class="info-score">{{finalScore}}</text>
           <text class="info-high-s" v-if="highScore">HIGH SCORE: {{highScore}}</text>
           <text class="btn-restart" @click="gameRestart">RESTART</text>
       </div>
+      <text class="tlt-win" v-if="win">YOU WIN !</text>
   </div>
 </template>
-<style>
-    body,html{
-        margin: 0;
-        height: 100%;
-    }
-</style>
-<style scoped>
-    .wrapper {
-        background-image: linear-gradient(to top,#000,#333);
-        padding-top: 20px;
-        display: flex;
-        flex-wrap: nowrap;
-        flex-direction: column;
-    }
-    .i-banner{
-        position: absolute;
-        top: 200px;
-        left: 175px;
-        width: 400px;
-        height: 100px;
-        opacity: 0;
-    }
-    .btn-start{
-        position: absolute;
-        color: #3cd917;
-        font-size: 50px;
-        width: 300px;
-        height: 80px;
-        left: 225px;
-        bottom: 300px;
-        text-align: center;
-        line-height: 80px;
-        border-width: 1px;
-        border-color: #3cd917;
-        border-radius: 8px;
-        background-color: rgba(0,0,0,0.8);
-        box-shadow: 0 0 10px #fff;
-        opacity: 0;
-    }
-    .stone-map{
-        position: relative;
-        flex: 1;
-    }
-    .u-info{
-        position: absolute;
-        top: 200px;
-        height: 800px;
-        width: 750px;
-    }
-    .info-tlt{
-        font-size: 70px;
-        color:#fff;
-        text-align: center;
-    }
-    .info-score{
-        font-size: 100px;
-        margin-top: 130px;
-        margin-bottom: 130px;
-        color:#3cd917;
-        text-align: center;
-    }
-    .info-high-s{
-        font-size: 40px;
-        margin-bottom: 30px;
-        color: #fbf00c;
-        text-align: center;
-    }
-    .btn-restart{
-        position: relative;
-        color: #3cd917;
-        font-size: 50px;
-        width: 300px;
-        height: 80px;
-        top:100px;
-        left: 400px;
-        text-align: center;
-        line-height: 80px;
-        border-width: 1px;
-        border-color: #3cd917;
-        border-radius: 8px;
-    }
-</style>
 
 <script>
 
@@ -106,15 +23,14 @@
             stoneMap: stoneMap
         },
         data: {
-//            actiontp: 'action',
             stoneMapShow: false,
             infoShow: false,
+            win:false,
             actionStart: 0,
             actionTo: 0,
             actionSize: 0,
             finalScore:0,
             highScore:0,
-//            sliderMove:"",
             allAction:["click", "up", "down", "left", "right"]                              //指令白名单
         },
 
@@ -133,23 +49,40 @@
                         styles: {
                             opacity:1
                         },
-                        duration: 2000,
+                        duration: 1000,
                         timingFunction: 'ease',
                         delay: 0
-                    });
+                    },_=>this.btnShine());
                 });
             },1000);
         },
         methods: {
-            gameStart(){
+            btnShine(){
+                !this.btnClock ? (this.btnClock = 1):this.btnClock ++;
                 animation.transition(this.$refs['rBtnStart'],{
                     styles: {
-                        opacity:0
+                        opacity:this.btnClock%2==1?.5:1
                     },
-                    duration: 1000,
+                    duration: 800,
                     timingFunction: 'linear',
                     delay: 0
+                },()=>{
+                    if(!this.startBtnHide){
+                        this.btnShine();
+                    }else {
+                        animation.transition(this.$refs['rBtnStart'],{
+                            styles: {
+                                opacity:0
+                            },
+                            duration: 400,
+                            timingFunction: 'linear',
+                            delay: 0
+                        });
+                    }
                 });
+            },
+            gameStart(){
+                this.startBtnHide = true;
 
                 animation.transition(this.$refs['rLogo'],{
                     styles: {
@@ -169,12 +102,33 @@
                 this.infoShow = false;
                 this.ScreenLock = false;
             },
-            onGameover(s1,s2) {
+            onGameover(s1,s2,_errorStone) {
                 this.finalScore = s1;
                 this.highScore = s1>s2?0:s2;
-                this.stoneMapShow = false;
-                this.infoShow = true;
                 this.ScreenLock = true;
+                this._shineStone = _errorStone || "";
+                this.stonesShine();
+                setTimeout(()=>{
+                    this.stoneMapShow = false;
+                    this._shineStone = "";
+                    this.infoShow = true;
+                },3000);
+            },
+            onGameWin() {
+                this.ScreenLock = true;
+            },
+            stonesShine(){
+                !this.stonesShineClock ? (this.stonesShineClock = 1):this.stonesShineClock ++;
+                if(!!this._shineStone) {
+                        animation.transition(this._shineStone, {
+                            styles: {
+                                opacity: this.stonesShineClock % 2 == 1 ? .2 : 1
+                            },
+                            duration: 400,
+                            timingFunction: 'linear',
+                            delay: 0
+                        }, () => this.stonesShine());
+                }
             },
             onClick(e) {
                 this.actiontp = "click";
@@ -231,3 +185,96 @@
         }
     }
 </script>
+
+<style>
+    body,html{
+        margin: 0;
+        height: 100%;
+    }
+</style>
+<style scoped>
+    .wrapper {
+        background-image: linear-gradient(to top,#000,#333);
+        padding-top: 20px;
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+    }
+    .i-banner{
+        position: absolute;
+        top: 200px;
+        left: 175px;
+        width: 400px;
+        height: 100px;
+        opacity: 0;
+    }
+    .btn-start{
+        position: absolute;
+        color: #3cd917;
+        font-size: 50px;
+        width: 300px;
+        height: 80px;
+        left: 225px;
+        bottom: 300px;
+        text-align: center;
+        line-height: 80px;
+        border-width: 1px;
+        border-color: #3cd917;
+        border-radius: 8px;
+        background-color: rgba(0,0,0,0.8);
+        box-shadow: 0 0 10px #fff;
+        opacity: 0;
+    }
+    .stone-map{
+        position: relative;
+        flex: 1;
+    }
+    .u-info{
+        position: absolute;
+        top: 200px;
+        height: 800px;
+        width: 750px;
+    }
+    .tlt-win{
+        position: fixed;
+        top:150px;
+        width: 750px;
+        font-size: 70px;
+        color:#fff;
+        text-align: center;
+        box-shadow: 0 0 10px #ff6616;
+    }
+    .info-tlt{
+        margin-top: 50px;
+        font-size: 70px;
+        color:#fff;
+        text-align: center;
+    }
+    .info-score{
+        font-size: 100px;
+        margin-top: 150px;
+        margin-bottom: 130px;
+        color:#3cd917;
+        text-align: center;
+    }
+    .info-high-s{
+        font-size: 40px;
+        margin-bottom: 40px;
+        color: #fbf00c;
+        text-align: center;
+    }
+    .btn-restart{
+        position: relative;
+        color: #3cd917;
+        font-size: 50px;
+        width: 300px;
+        height: 80px;
+        top:100px;
+        left: 400px;
+        text-align: center;
+        line-height: 80px;
+        border-width: 1px;
+        border-color: #3cd917;
+        border-radius: 8px;
+    }
+</style>

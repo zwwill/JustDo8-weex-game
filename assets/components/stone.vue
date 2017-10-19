@@ -79,7 +79,7 @@
 
                     animation.transition(this.$refs['stone'], {
                         styles: {
-                            transform: 'translate('+125*5 +',-'+125*8+') scale(0)'
+                            transform: 'translate('+125*5 +',-'+125*9+') scale(0)'
                         },
                         duration: 700,
                         timingFunction: 'ease-in',

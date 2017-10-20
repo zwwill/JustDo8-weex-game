@@ -30,4 +30,9 @@
     <preference name="PageLength" value="0" />
     <preference name="PaginationBreakingMode" value="page" />
     <preference name="PaginationMode" value="unpaginated" />
+    <feature name="WeexNatAudio">
+        <param name="category" value="module" />
+        <param name="ios-package" value="WeexNatAudio" />
+        <param name="api" value="nat/media/audio" />
+    </feature>
 </widget>

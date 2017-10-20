@@ -15,7 +15,6 @@
 
 <script>
 
-    var modal = weex.requireModule('modal');
     const animation = weex.requireModule('animation');
     import stoneMap from '../assets/components/stoneMap.vue';
     export default {
@@ -131,14 +130,12 @@
                 }
             },
             onClick(e) {
-                this.actiontp = "click";
                 this.actionLaunch("click");
             },
             /**
              * 手势：上下滑动
              * */
             onSwipe(e) {
-                this.actiontp = "swipe:" + e.direction;
                 this.actionLaunch(e.direction)
             },
             /**
@@ -158,16 +155,13 @@
              * */
             onHorizontalpan(e) {
                 if(this.actionStart==0) return;
-//                this.actiontp = "horizontalpan";
                 this.actionTo = e.changedTouches[0].screenX
                 this.actionSize = this.actionTo - this.actionStart;
                 if(this.actionSize >= 40){
-//                    this.sliderMove = 'right';
                     this.actionStart = this.actionTo;
                     this.actionLaunch("right");
 
                 }else if(this.actionSize <= -40){
-//                    this.sliderMove = 'left';
                     this.actionStart = this.actionTo;
                     this.actionLaunch("left");
 

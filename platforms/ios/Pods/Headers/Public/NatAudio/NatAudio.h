@@ -1,0 +1,1 @@
+../../../NatAudio/ios/Classes/NatAudio.h

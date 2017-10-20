@@ -17,6 +17,7 @@
     "license": "MIT",
     "dependencies": {
         "fs-extra": "^4.0.1",
+        "natjs": "^0.1.2",
         "vue": "^2.1.8",
         "vue-router": "^2.1.1",
         "vuex": "^2.1.1",

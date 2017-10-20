@@ -32,6 +32,7 @@ Pod::Spec.new do |s|
 
   #s.xcconfig = { "FRAMEWORK_SEARCH_PATHS" => "$(SDKROOT)/TRemoteDebugger" }
   s.dependency "WeexSDK"
+  s.dependency 'NatAudio', '0.0.3'
   #${weexpackPlaceHolder}
 
   # s.vendored_frameworks = 'Weexplugin.framework'

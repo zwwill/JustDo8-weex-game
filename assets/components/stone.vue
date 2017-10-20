@@ -26,17 +26,16 @@
 
 <script>
     const animation = weex.requireModule('animation');
-    const modal = weex.requireModule('modal');
     export default {
         props: ['id', 'p0', 'num0'],
-        data(){
+        data() {
             return {
-                show:true,
+                show: true,
                 p: '0,8',
                 visibility: '',
                 num: -1,
-                colors:             ["#333","#666","#eee","#b9e3ee","#ebe94b","#46cafb","#eca48f","#decb3d","#8d1894"],
-                backgroundColors:   ["#222","#ddd","#999","#379dc3","#36be0d","#001cc6","#da4324","#56125a","#ffffff"]
+                colors: ["#333", "#666", "#eee", "#b9e3ee", "#ebe94b", "#46cafb", "#eca48f", "#decb3d", "#8d1894"],
+                backgroundColors: ["#222", "#ddd", "#999", "#379dc3", "#36be0d", "#001cc6", "#da4324", "#56125a", "#ffffff"]
             }
         },
         computed: {
@@ -44,8 +43,8 @@
                 return this.colors[this.num];
             },
             score: function () {
-                this.num<0 && (this.num = this.num0 || 1);
-                return this.num<9&&this.num>0?this.num:0
+                this.num < 0 && (this.num = this.num0 || 1);
+                return this.num < 9 && this.num > 0 ? this.num : 0
             },
             backgroundColor0: function () {
                 return this.backgroundColors[this.num];
@@ -53,11 +52,11 @@
         },
         watch: {
             p: function (val) {
-                var _x = 125*val.charAt(0)+"px",
-                    _y = 125*val.charAt(2)+"px";
-                animation.transition(this.$refs['stone'],{
+                var _x = 125 * val.charAt(0) + "px",
+                    _y = 125 * val.charAt(2) + "px";
+                animation.transition(this.$refs['stone'], {
                     styles: {
-                        transform: 'translate('+_x +',-'+_y+')'
+                        transform: 'translate(' + _x + ',-' + _y + ')'
                     },
                     duration: 200,
                     timingFunction: 'ease-in',
@@ -65,44 +64,54 @@
                 });
             }
         },
-        mounted(){
+        mounted() {
             this.initState(this.p0);
         },
         methods: {
-            move(_x, _y){
+            /**
+             * 移动数字块
+             * */
+            move(_x, _y) {
                 this.p = _x + ',' + _y;
             },
-            scoreChange(_num){
-                if(_num>0) {
+            /**
+             * 更新数字块的分值，即显示数字
+             * */
+            scoreChange(_num) {
+                if (_num > 0) {
                     this.num = _num;
-                }else{
+                } else {
 
                     animation.transition(this.$refs['stone'], {
                         styles: {
-                            transform: 'translate('+125*5 +',-'+125*9+') scale(0)'
+                            transform: 'translate(' + 125 * 5 + ',-' + 125 * 9 + ') scale(0)'
                         },
                         duration: 700,
                         timingFunction: 'ease-in',
                         delay: 0
-                    },()=>{
+                    }, () => {
                         this.show = false;
-                        this.$parent.scorePlus(Math.pow(4,parseInt(this.num)));
+                        this.$parent.scorePlus(Math.pow(4, parseInt(this.num)));
                         this.num = 0;
+                        this.$destroy();
                     });
                 }
             },
-            initState(_p){
+            /**
+             * 初始化数字块的位置
+             * */
+            initState(_p) {
                 _p = _p.split(',');
                 let _x = _p[0] * 125 + 'px',
                     _y = _p[1] * 125 + 'px';
                 this.num = this.num0;
-                animation.transition(this.$refs['stone'],{
+                animation.transition(this.$refs['stone'], {
                     styles: {
-                        transform: 'translate('+_x+',-'+_y+')'
+                        transform: 'translate(' + _x + ',-' + _y + ')'
                     },
                     duration: 10,
                     delay: 0
-                },()=>{
+                }, () => {
                     this.visibility = 'visible';
                 });
                 this.p = this.p0;

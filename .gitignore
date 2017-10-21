@@ -9,7 +9,6 @@
 npm-debug.log*
 
 # dependencies
-/node_modules
 
 # cache files
 .DS_Store
@@ -35,3 +34,5 @@ lauch.json
 
 
 /platforms/android/
+/node_modules/
+/node_modules

@@ -1,9 +1,9 @@
 //
 //  WeexPlugin.m
-//  WeexDemo
+//  JustDo8
 //
 //  Created by yangshengtao on 16/11/15.
-//  Copyright © 2016年 taobao. All rights reserved.
+//  Copyright © 2016年 zwwill. All rights reserved.
 //
 
 #import "WeexPluginLoader.h"

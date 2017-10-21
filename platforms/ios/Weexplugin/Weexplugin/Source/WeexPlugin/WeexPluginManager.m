@@ -3,7 +3,7 @@
 //  Weexplugin
 //
 //  Created by yangshengtao on 16/12/26.
-//  Copyright © 2016年 Taobao. All rights reserved.
+//  Copyright © 2016年 zwwill. All rights reserved.
 //
 
 #import "WeexPluginManager.h"

@@ -3,7 +3,7 @@
 //  WeexSDK
 //
 //  Created by zifan.zx on 2017/5/4.
-//  Copyright © 2017年 taobao. All rights reserved.
+//  Copyright © 2017年 zwwill. All rights reserved.
 //
 
 @protocol WXConfigCenterProtocol <NSObject>

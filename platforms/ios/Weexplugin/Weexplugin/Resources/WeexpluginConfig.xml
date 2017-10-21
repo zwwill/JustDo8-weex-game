@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.taobao.WeexDemo" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://*">
-    <name>WeexDemo</name>
+<widget id="com.zwwill.JustDo8" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://*">
+    <name>JustDo8</name>
     <description>
         A sample Weex application that responds to the deviceready event.
     </description>
@@ -30,9 +30,4 @@
     <preference name="PageLength" value="0" />
     <preference name="PaginationBreakingMode" value="page" />
     <preference name="PaginationMode" value="unpaginated" />
-    <feature name="WeexNatAudio">
-        <param name="category" value="module" />
-        <param name="ios-package" value="WeexNatAudio" />
-        <param name="api" value="nat/media/audio" />
-    </feature>
 </widget>

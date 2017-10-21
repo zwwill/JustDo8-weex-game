@@ -81,9 +81,9 @@ parts = [parts subarrayWithRange:(NSRange){0, parts.count - 1}];\
 
 #define WX_COMPONENT_NOTIFICATION_VIEW_LOADED    @"WXComponentViewLoaded"
 
-#define WX_COMPONENT_THREAD_NAME @"com.taobao.weex.component"
+#define WX_COMPONENT_THREAD_NAME @"com.zwwill.weex.component"
 
-#define WX_BRIDGE_THREAD_NAME @"com.taobao.weex.bridge"
+#define WX_BRIDGE_THREAD_NAME @"com.zwwill.weex.bridge"
 
 #define WX_FONT_DOWNLOAD_DIR [[WXUtility cacheDirectory] stringByAppendingPathComponent:[NSString stringWithFormat:@"wxdownload"]]
 

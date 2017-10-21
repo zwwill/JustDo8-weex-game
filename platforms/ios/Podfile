@@ -10,7 +10,7 @@ def common
     pod 'SocketRocket', '0.4.2'
 end
 
-target 'WeexDemo' do
+target 'JustDo8' do
     common
 end
 

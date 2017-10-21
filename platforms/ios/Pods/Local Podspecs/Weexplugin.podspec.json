@@ -23,9 +23,6 @@
   "dependencies": {
     "WeexSDK": [
 
-    ],
-    "NatAudio": [
-      "0.0.3"
     ]
   }
 }

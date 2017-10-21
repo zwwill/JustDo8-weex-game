@@ -1,10 +1,15 @@
 source 'git@github.com/CocoaPods/Specs.git'
 platform :ios, '7.0'
-# inhibit_all_warnings!
+#inhibit_all_warnings!
+
 def common
-		pod 'WeexSDK'
-	pod 'NatAudio', '0.0.3'
+	pod 'WeexSDK'
 end
+
 target 'Weexplugin' do
-	common
+    common
+end
+
+target 'WeexpluginTests' do
+    common
 end

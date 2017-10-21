@@ -394,12 +394,12 @@
                 let path = '';
                 let nativeBase;
                 const isAndroidAssets = bundleUrl.indexOf('your_current_IP') >= 0 || bundleUrl.indexOf('file://assets/') >= 0;
-                const isiOSAssets = bundleUrl.indexOf('file:///') >= 0 && bundleUrl.indexOf('WeexDemo.app') > 0;
+                const isiOSAssets = bundleUrl.indexOf('file:///') >= 0 && bundleUrl.indexOf('JustDo8.app') > 0;
                 if (isAndroidAssets) {
                     nativeBase = 'file://assets/dist';
                 } else if (isiOSAssets) {
-                    // file:///var/mobile/Containers/Bundle/Application/{id}/WeexDemo.app/
-                    // file:///Users/{user}/Library/Developer/CoreSimulator/Devices/{id}/data/Containers/Bundle/Application/{id}/WeexDemo.app/
+                    // file:///var/mobile/Containers/Bundle/Application/{id}/JustDo8.app/
+                    // file:///Users/{user}/Library/Developer/CoreSimulator/Devices/{id}/data/Containers/Bundle/Application/{id}/JustDo8.app/
                     nativeBase = bundleUrl.substring(0, bundleUrl.lastIndexOf('/') + 1);
                 } else {
                     const matches = /\/\/([^\/]+?)\//.exec(bundleUrl);

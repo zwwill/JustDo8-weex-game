@@ -131,7 +131,7 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
         NSString *currentVersion = [infoDic objectForKey:@"CFBundleShortVersionString"];
-        NSString *URL = @"http://itunes.apple.com/lookup?id=1130862662";
+        NSString *URL = @"http://itunes.apple.com/lookup?id=1299422482";
         NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
         [request setURL:[NSURL URLWithString:URL]];
         [request setHTTPMethod:@"POST"];
@@ -166,7 +166,7 @@
             [[NSUserDefaults standardUserDefaults] setBool:TRUE forKey:self.latestVer];
             break;
         case 1:
-            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/cn/app/weex-playground/id1130862662?mt=8"]];
+            [[UIApplication sharedApplication]openURL:[NSURL URLWithString:@"itms-apps://itunes.apple.com/cn/app/weex-playground/id1299422482?mt=8"]];
         default:
             break;
     }

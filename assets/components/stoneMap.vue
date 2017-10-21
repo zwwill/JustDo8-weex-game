@@ -381,8 +381,8 @@
             },
             music(_url,_lock) {
                 if(this.soundLock) return;
-                Nat.audio.stop();
-                Nat.audio.play(_url);
+                Nat && Nat.audio.stop();
+                Nat && Nat.audio.play(_url);
                 if(_lock){
                     this.soundLock = true;
                     setTimeout(()=>{this.soundLock = false},19000);

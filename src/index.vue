@@ -1,8 +1,8 @@
 <template>
   <div class="wrapper" @swipe="onSwipe" @click="onClick" @panstart="onPanstart" @panend="onPanend" @horizontalpan="onHorizontalpan">
+      <stoneMap v-if="stoneMapShow" ref="rStoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameover" @win="onGameWin"></stoneMap>
       <image class="i-banner" ref="rLogo" resize="contain" src="http://doc.zwwill.com/justdo8/img/banner.png"></image>
       <text class="btn-start" ref="rBtnStart" @click="gameStart">START</text>
-      <stoneMap v-if="stoneMapShow" ref="rStoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameover" @win="onGameWin"></stoneMap>
       <div class="u-info" v-if="infoShow">
           <text class="info-tlt">{{highScore?'FINAL SCORE':'RECORD BREAKING'}}</text>
           <text class="info-score">{{finalScore}}</text>

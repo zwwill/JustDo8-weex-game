@@ -41,6 +41,10 @@
                 }
             }
         },
+        created(){
+            let _max_h = Math.floor(weex.config.env.deviceHeight / weex.config.env.deviceWidth * 6 ) - 1 ;
+            _max_h < this.MAX_H && (this.MAX_H = _max_h);
+        },
         mounted() {
             this.map = [];
             this.stones = [];

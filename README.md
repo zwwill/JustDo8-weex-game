@@ -5,7 +5,10 @@
 > 此文是对此 app 的详细介绍 [https://segmentfault.com/a/1190000011654082](https://segmentfault.com/a/1190000011654082)
 
 # 体验
-可以直接使用 Weex Playground 扫码体验 [Weex Playground下载地址](http://weex.apache.org/cn/playground.html)
+
+IOS已上线 [https://itunes.apple.com/cn/app/id1299422482](https://itunes.apple.com/cn/app/id1299422482)
+
+也可以直接使用 Weex Playground 扫码体验 [Weex Playground下载地址](http://weex.apache.org/cn/playground.html)
 
 ![](https://github.com/zwwill/just-do-8/raw/master/QR4WeexPG.png)
 
@@ -19,6 +22,7 @@ $ npm install
 ```
 
 ## 运行ios
+
 ios打包需要开发者帐号，如果不是付费用户就只能通过xcode调试的方式安装在自己的关联手机上（就是手机需要使用此帐号登录）或者虚拟机调试。
 以下是无开发者付费帐号的执行方法
 

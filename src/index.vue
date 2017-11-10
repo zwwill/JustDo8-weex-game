@@ -1,12 +1,12 @@
 <template>
-  <div class="wrapper" @swipe="onSwipe" @click="onClick" @panstart="onPanstart" @panend="onPanend" @horizontalpan="onHorizontalpan">
+  <div class="wrapper" @swipe="onSwipe" @click="onClick">
       <stoneMap v-if="stoneMapShow" ref="rStoneMap" class="stone-map" @screenLock="onScreenLock" @screenUnlock="onScreenUnlock" @over="onGameover" @win="onGameWin"></stoneMap>
-      <text class="btn-start" ref="rBtnStart" @click="gameStart">START</text>
+      <text class="btn-start" ref="rBtnStart" @touchend="gameStart">START</text>
       <div class="u-info" v-if="infoShow">
           <text class="info-tlt">{{highScore?'FINAL SCORE':'RECORD BREAKING'}}</text>
           <text class="info-score">{{finalScore}}</text>
           <text class="info-high-s" v-if="highScore">HIGH SCORE: {{highScore}}</text>
-          <text class="btn-restart" @click="gameRestart">RESTART</text>
+          <text class="btn-restart" @touchend="gameRestart">RESTART</text>
       </div>
       <text class="tlt-win" v-if="win">YOU WIN !</text>
       <image class="i-banner" ref="rLogo" resize="contain" src="http://doc.zwwill.com/justdo8/img/banner.png"></image>
@@ -33,7 +33,6 @@
             highScore:0,
             allAction:["click", "up", "down", "left", "right"]                              //指令白名单
         },
-
         mounted(){
             setTimeout(()=>{
                 animation.transition(this.$refs['rLogo'],{
@@ -156,7 +155,7 @@
              * */
             onHorizontalpan(e) {
                 if(this.actionStart==0) return;
-                this.actionTo = e.changedTouches[0].screenX
+                this.actionTo = e.changedTouches[0].screenX;
                 this.actionSize = this.actionTo - this.actionStart;
                 if(this.actionSize >= 40){
                     this.actionStart = this.actionTo;
@@ -168,6 +167,7 @@
 
                 }
             },
+
             onScreenLock(e) {
                 this.ScreenLock = true;
             },

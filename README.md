@@ -2,7 +2,7 @@
 
 ![](http://upload-images.jianshu.io/upload_images/1494908-c22761b059d5d35f?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-> 此文是对此 app 的详细介绍 [https://segmentfault.com/a/1190000011654082](https://segmentfault.com/a/1190000011654082)
+> 此文是对此 app 的详细介绍 [https://segmentfault.com/a/1190000011671135](https://segmentfault.com/a/1190000011671135)
 
 # 体验
 

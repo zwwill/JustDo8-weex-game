@@ -73,7 +73,6 @@
              * */
             move(_x, _y) {
                 this.p = _x + ',' + _y;
-//                this.moveP(_x,_y);
             },
             /**
              * 更新数字块的分值，即显示数字
@@ -114,19 +113,6 @@
                     delay: 0
                 },()=>{
                     this.p = this.p0;
-                });
-//                this.moveP(this.p0.charAt(1),this.p0.charAt(2))
-            },
-            moveP(_x0,_y0){
-                var _x = 125 * _x0 + "px",
-                    _y = 125 * _y0 + "px";
-                animation.transition(this.$refs['stone'], {
-                    styles: {
-                        transform: 'translate(' + _x + ',-' + _y + ')'
-                    },
-                    duration: 200,
-                    timingFunction: 'ease-in',
-                    delay: 0
                 });
             }
         }

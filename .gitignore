@@ -33,6 +33,6 @@ lauch.json
 /package-lock.json
 
 
-/platforms/
+/platforms/android
 /node_modules/
 /node_modules

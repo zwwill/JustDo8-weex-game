@@ -34,7 +34,7 @@ function walk(dir) {
     .forEach((file) => {
       const fullpath = pathTo.join(directory, file);
       const stat = fs.statSync(fullpath);
-      const extname = pathTo.extname(fullpacth);
+      const extname = pathTo.extname(fullpath);
       if (stat.isFile() && extname === '.vue' || extname === '.we') {
         if (!fileType) {
           fileType = extname;
